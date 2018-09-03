@@ -61,10 +61,10 @@ for i in range(test.shape[0]):
 	# print(j)	
 	prob_final_no = prob_final_no*prob_no
 	prob_final_yes = prob_final_yes*prob_yes
-	# print(prob_final_yes)
-	# print(prob_final_no)
+	# print("The final prob. of yes for column "+ str(i) + " is ",prob_final_yes)
+	# print("The final prob. of No for column "+ str(i) + " is ",prob_final_no)
 	if (prob_final_yes > prob_final_no):
-		print("the output for column "+ str(i) + " is", 1)
+		print("The output for column in test data is "+ str(i) + " is 1")
 	else:
-		print("the output for column "+ str(i) + " is", 0)
+		print("The output for column in test data is "+ str(i) + " is 0")
 
