@@ -61,3 +61,6 @@ for i in range(X_test.shape[0]):
 
 	# print(least_five)
 print(y_predicted)	
+
+for i in range(X_test.shape[0]):
+	print("Test instance "+ str(i)+ ": " + str(y_predicted[i]))
