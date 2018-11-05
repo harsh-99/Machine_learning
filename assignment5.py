@@ -1,5 +1,8 @@
 import numpy as np
 from sklearn import preprocessing
+import matplotlib.pyplot as plt 
+
+kernel = 'linear'
 
 data = np.genfromtxt('spambase/spambase.csv', delimiter = ',')
 X = data[:, 0 : data.shape[1] - 1]
@@ -36,17 +39,59 @@ print("Y_val shape" + str(Y_val.shape))
 from sklearn import svm
 #Assumed you have, X (predictor) and Y (target) for training data set and x_test(predictor) of test_dataset
 # Create SVM classification object 
-model = svm.SVC(kernel='linear', C=1, gamma=1) 
-model.fit(X_train, Y_train)
-model.score(X_train, Y_train)
-print("Completed")
-# #Predict Output
-predicted= model.predict(X_val)
-predicted = predicted.reshape([-1,1])
-print(predicted.shape)
-for i in range (predicted.shape[0]):
-	if predicted[i,0] == Y_val[i,0]:
-		acc +=1
-print("The accuracy obtained is "+str(float(acc)/float(predicted.shape[0])) )
+accuracy = []
+accuracy_train = []
+best_acc = 0
+num = []
+best_c = 0
+best_train_acc = 0
+best_c_train = 0
 
+for j in range(200):
+	model = svm.SVC(kernel=kernel, C=(j+1), gamma=7) 
+	model.fit(X_train, Y_train)
+	model.score(X_train, Y_train)
+	predicted_train = model.predict(X_train)
+	predicted_train = predicted_train.reshape([-1,1])
+	predicted= model.predict(X_val)
+	predicted = predicted.reshape([-1,1])
+	print("Current Value of C is:" + str(j+1))
+	print("Completed")
+	# #Predict Output
+	print(predicted.shape)
+	acc = 0
+	acc_train = 0
+	for i in range (predicted_train.shape[0]):
+		if predicted_train[i,0] == Y_train[i,0]:
+			acc_train +=1
+	for i in range (predicted.shape[0]):
+		if predicted[i,0] == Y_val[i,0]:
+			acc +=1
+	
+	print("The accuracy obtained is "+ str(float(acc)/float(predicted.shape[0])))
+	print("the train accuracy is "+ str(float(acc_train)/float(predicted_train.shape[0])))
+	accuracy.append(float(acc)/float(predicted.shape[0]))
+	accuracy_train.append(float(acc_train)/float(predicted_train.shape[0]))
+	
+	if best_train_acc< float(acc_train)/float(predicted_train.shape[0]):
+		best_train_acc = float(acc_train)/float(predicted_train.shape[0])
+		best_c_train = j+1
+
+	if best_acc<(float(acc)/float(predicted.shape[0])):
+		best_acc = (float(acc)/float(predicted.shape[0]))
+		best_c = j+1
+	j +=1
+	num.append(j)
+
+print("Best accuracy achieved is:"+str(best_acc))
+print("Best C is:"+str(best_c))
+np.save('acc_' +str(kernel) +'.npy',accuracy)
+plt.plot(num,accuracy, label = 'test')
+plt.plot(num,accuracy_train, label = 'train')
+plt.xlabel("C")
+plt.ylabel("Accuracy")
+plt.legend(loc="lower center")
+plt.title(kernel)
+plt.savefig('plot_'+str(kernel)+'_'+ str(best_c)+'_'+ str(best_acc)+'_'+ str(best_c_train)+'_'+ str(best_train_acc)+'.png', bbox_inches='tight')
+plt.show()
 
